@@ -1,17 +1,35 @@
 import "./App.css";
-import AddBar from "./components/AddBar";
 import TodoList from "./components/TodoList";
 import EditMode from "./components/EditMode";
-import { themeContext } from "./context/Context";
+import Footer from "./components/Footer";
+import { editContext } from "./context/Context";
+import Toggle from "./components/Toggle";
+
+import useTodoHandler from "./hooks/useTodoHandler";
 
 //hooks
 import { useEffect, useState } from "react";
 
-let nextId = 2;
-
 function App() {
-  const [data, setData] = useState([]);
   const [theme, setTheme] = useState("light");
+  const [edit, setEdit] = useState({
+    edit: false,
+    isSaved: false,
+    isEdited: false,
+  });
+  const [clickedId, setClickedId] = useState(null);
+
+  function handleId(id) {
+    setClickedId(id);
+  }
+
+  const {
+    data: originData,
+    setData: setOriginData,
+    handleAdd,
+    handleRemove,
+    handleCheck,
+  } = useTodoHandler(null);
 
   useEffect(() => {
     fetchData();
@@ -22,38 +40,13 @@ function App() {
     const dataRes = await fetch("/mock/data.json");
     if (dataRes.ok) {
       const result = await dataRes.json();
-      setData(result);
+      setOriginData(result);
     }
   }
 
-  const handleAdd = (args) => {
-    setData([
-      ...data,
-      {
-        id: nextId++,
-        content: args,
-        active: true,
-      },
-    ]);
-  };
-
-  const handleCheck = (id) => {
-    const nextData = data.map((todo) => {
-      if (todo.id === id) {
-        return { ...todo, active: !todo.active };
-      }
-      return todo;
-    });
-    setData(nextData);
-  };
-
-  const handleRemove = (id) => {
-    setData(data.filter((todo) => todo.id !== id));
-  };
-
   const darkClass = {
     text: "dark:text-white",
-    bg: "dark:bg-slate-800",
+    bg: "dark:bg-slate-900",
   };
 
   const themeClass =
@@ -61,27 +54,27 @@ function App() {
       ? `darkMode ${[darkClass.text, darkClass.bg].join(" ")}`
       : "";
 
+  if (!originData) return;
+
   return (
-    <div className={`TodoApp ${themeClass}`}>
-      <themeContext.Provider value={theme}>
-        <EditMode
-          data={data}
-          handleCheck={handleCheck}
-          handleRemove={handleRemove}
+    <div className={`App ${themeClass}`}>
+      <div className="TodoApp">
+        <editContext.Provider value={{ edit, setEdit, clickedId, handleId }}>
+          {edit.edit ? (
+            <EditMode data={originData} saveData={setOriginData} />
+          ) : (
+            <TodoList
+              data={originData}
+              handleCheck={handleCheck}
+              handleRemove={handleRemove}
+            />
+          )}
+          <Footer onAdd={handleAdd} />
+        </editContext.Provider>
+        <Toggle
+          setTheme={() => setTheme(theme === "dark" ? "light" : "dark")}
         />
-        {/* <TodoList
-          data={data}
-          handleCheck={handleCheck}
-          handleRemove={handleRemove}
-        /> */}
-        <AddBar onSubmit={handleAdd} />
-      </themeContext.Provider>
-      <input
-        id="theme"
-        type="checkbox"
-        onChange={() => setTheme(theme === "dark" ? "light" : "dark")}
-      />
-      <label htmlFor="theme">set DarkMode</label>
+      </div>
     </div>
   );
 }

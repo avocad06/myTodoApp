@@ -1,12 +1,12 @@
 [
-    {
-      "id": 0,
-      "content": "ZICO - 걘아니야",
-      "active": true
-    },
-    {
-      "id": 1,
-      "content": "페노메코 - 걘아니야pt.2",
-      "active": true
-    }
-  ]
+  {
+    "id": 0,
+    "content": "일반모드입니다.",
+    "active": true
+  },
+  {
+    "id": 1,
+    "content": "편집모드입니다.",
+    "active": false
+  }
+]

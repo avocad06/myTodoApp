@@ -1,11 +1,11 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { FormCheck } from "../utils/validation";
 import * as Form from "@radix-ui/react-form";
 
 import { useContext } from "react";
 import { themeContext } from "../context/Context";
 
-export default function AddBar({ onSubmit }) {
+export default function AddBar({ onAdd }) {
   const [inputText, setInputText] = useState("");
   // const inputPlaceholder = useRef(null);
 
@@ -14,7 +14,7 @@ export default function AddBar({ onSubmit }) {
     const valid = FormCheck(inputText);
 
     if (valid) {
-      onSubmit(valid);
+      onAdd(valid);
     }
 
     // if (!valid) {
@@ -32,8 +32,8 @@ export default function AddBar({ onSubmit }) {
   return (
     <>
       <Form.Root onClearServerErrors={handleSubmit} className="FormRoot">
-        <Form.Field>
-          <Form.Control className="FormField" asChild>
+        <Form.Field className="FormField">
+          <Form.Control asChild>
             <input
               className={`Input ${theme}:text-white`}
               value={inputText}

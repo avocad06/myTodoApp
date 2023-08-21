@@ -1,25 +1,19 @@
 import FilterHeader from "./FilterHeader";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useContext, useEffect } from "react";
 
 import { CheckIcon, Cross2Icon } from "@radix-ui/react-icons";
 import * as Checkbox from "@radix-ui/react-checkbox";
+import { editContext } from "../context/Context";
+
+import EditInput from "./EditInput";
+import useScroll from "../hooks/useScroll";
 
 export default function TodoList({ data, handleCheck, handleRemove }) {
   const [filter, setFilter] = useState("All");
-  const [listHeight, setListHeight] = useState(0);
 
   const listRef = useRef(null);
 
-  useEffect(() => {
-    if (listRef.current) {
-      const height = listRef.current.scrollHeight;
-
-      if (listHeight < height) {
-        listRef.current.scrollTop = listRef.current.scrollHeight;
-      }
-      return setListHeight(height);
-    }
-  }, [data.length]);
+  useScroll(listRef, data);
 
   const filteredTodo = data.filter((todo) => {
     if (filter === "Todo") {
@@ -49,28 +43,46 @@ export default function TodoList({ data, handleCheck, handleRemove }) {
   return (
     <section
       style={{
-        minHeight: "250px",
-        overflow: "hidden",
+        height: "60%",
         marginBottom: "25px",
       }}
     >
-      <FilterHeader handleFilter={handleFilter} />
+      <FilterHeader filter={filter} handleFilter={handleFilter} />
       <ul className="TodoList" ref={listRef}>
         {filteredTodo.length ? (
           Todos
         ) : (
-          <p style={{ color: "rgb(111, 110, 119)" }}>Empty {filter}</p>
+          <p
+            style={{
+              color: "rgb(111, 110, 119)",
+              width: "100%",
+              textAlign: "center",
+            }}
+          >
+            Empty {filter}
+          </p>
         )}
       </ul>
     </section>
   );
 }
 
-export function Todo({ todo, handleCheck, handleRemove }) {
+export function Todo({ todo, handleRemove, handleCheck, handleEdit }) {
   const delBtnRef = useRef(null);
 
+  const { edit, setEdit, handleId, clickedId: id } = useContext(editContext);
+
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (inputRef.current && todo.id === id) {
+      inputRef.current.focus();
+    }
+    return () => (inputRef.current = null);
+  }, []);
+
   const handleClick = (e) => {
-    e.stopPropagation();
+    e.preventDefault();
     handleRemove(todo.id);
   };
 
@@ -92,7 +104,24 @@ export function Todo({ todo, handleCheck, handleRemove }) {
             <CheckIcon />
           </Checkbox.Indicator>
         </Checkbox.Root>
-        <p>{todo.content}</p>
+        {edit.edit ? (
+          <EditInput
+            todo={todo}
+            editValue={todo.content}
+            handleEdit={handleEdit}
+            ref={inputRef}
+          />
+        ) : (
+          <p
+            className="TodoText"
+            onClick={() => {
+              handleId(todo.id);
+              setEdit({ ...edit, edit: !edit.edit });
+            }}
+          >
+            {todo.content}
+          </p>
+        )}
         <button ref={delBtnRef} onClick={handleClick}>
           <Cross2Icon />
         </button>
