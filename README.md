@@ -5,7 +5,7 @@
 react custom hook과 radixUI 사용으로 headless 컴포넌트 경험을 목적으로 진행한 프로젝트입니다.
 ```
 
-![example](https://github.com/avocad06/myTodoApp/docs/assets/108647806/306f2054-2b99-42ac-a442-044122b56146)
+![example](https://github.com/avocad06/myTodoApp/assets/108647806/fe1497c1-31bf-419f-a619-f0412148fcad)
 
 
 <details>
