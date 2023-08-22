@@ -1,5 +1,5 @@
 # my-todo-app
-🔗 배포주소: https://main--majestic-manatee-4c18fe.netlify.app/
+🔗 배포주소: https://my-edit-todo.netlify.app/
 
 ```
 react custom hook과 radixUI 사용으로 headless 컴포넌트 경험을 목적으로 진행한 프로젝트입니다.
